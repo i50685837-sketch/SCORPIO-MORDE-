@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SCORPIO MORDE | Command Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg-deep:#06010a;
+    --purple-core:#7b1fa2;
+    --neon-violet:#cf26ff;
+    --bright-magenta:#f038ff;
+    --dark-card:rgba(18,4,33,.88);
+    --danger-glow:rgba(207,38,255,.35);
+    --danger-red:#ff0055;
+    --success-green:#00ff88;
+    --warning:#ffd000;
+    --border-purple:rgba(207,38,255,.3);
+    --text-soft:#a78bfa;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background-color:var(--bg-deep);
+    background-image:
+        radial-gradient(circle at 50% 20%,rgba(123,31,162,.2),transparent 60%),
+        radial-gradient(circle at 80% 80%,rgba(207,38,255,.1),transparent 50%);
+    color:#fff;
+    font-family:'Rajdhani',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    padding-bottom:90px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,.3) 50%),
+        linear-gradient(90deg,rgba(255,0,0,.03),rgba(0,255,0,.01),rgba(0,0,255,.03));
+    background-size:100% 4px,6px 100%;
+    pointer-events:none;
+    z-index:999;
+}
+
+/* HEADER */
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    background:rgba(10,2,18,.95);
+    border-bottom:1px solid var(--border-purple);
+    position:sticky;
+    top:0;
+    z-index:50;
+    backdrop-filter:blur(12px);
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.menu-btn{
+    background:rgba(18,4,33,.9);
+    border:1px solid var(--border-purple);
+    color:var(--neon-violet);
+    width:42px;
+    height:42px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.title-group h1{
+    font-family:'Orbitron',sans-serif;
+    font-size:1.4rem;
+    letter-spacing:2px;
+    text-shadow:0 0 10px var(--neon-violet);
+}
+
+.title-group p{
+    font-family:'Share Tech Mono',monospace;
+    font-size:.75rem;
+    color:var(--text-soft);
+}
+
+.credit-badge{
+    background:rgba(6,1,10,.9);
+    border:1px solid var(--neon-violet);
+    padding:7px 14px;
+    border-radius:20px;
+    font-family:'Orbitron',sans-serif;
+    font-size:.8rem;
+    color:var(--bright-magenta);
+    cursor:pointer;
+}
+
+/* SIDEBAR */
+
+.sidebar-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    z-index:200;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+}
+
+.sidebar-overlay.active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-290px;
+    width:290px;
+    height:100%;
+    background:rgba(12,2,22,.98);
+    border-right:1px solid var(--neon-violet);
+    z-index:201;
+    transition:.3s;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:25px 20px;
+}
+
+.sidebar.active{
+    left:0;
+}
+
+.sidebar-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:30px;
+}
+
+.sidebar-logo{
+    font-family:'Orbitron',sans-serif;
+    font-weight:900;
+}
+
+.sidebar-logo span{
+    color:var(--bright-magenta);
+}
+
+.nav-list{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.nav-item button{
+    width:100%;
+    background:transparent;
+    border:1px solid transparent;
+    text-align:left;
+    padding:12px 14px;
+    color:var(--text-soft);
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    border-radius:4px;
+    cursor:pointer;
+}
+
+.nav-item button:hover,
+.nav-item.active button{
+    background:rgba(123,31,162,.25);
+    border-color:var(--neon-violet);
+    color:#fff;
+}
+
+.signout-btn{
+    width:100%;
+    background:transparent;
+    color:var(--danger-red);
+    border:1px solid rgba(255,0,85,.3);
+    padding:12px;
+    cursor:pointer;
+    font-family:'Orbitron',sans-serif;
+}
+
+/* MAIN */
+
+.main-container{
+    max-width:900px;
+    margin:auto;
+    padding:24px 20px;
+}
+
+.view-section{
+    display:none;
+}
+
+.view-section.active{
+    display:block;
+    animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(6px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* METRICS */
+
+.metrics-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.metric-card{
+    background:var(--dark-card);
+    border:1px solid var(--border-purple);
+    padding:18px;
+    border-radius:6px;
+}
+
+.metric-icon{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(6,1,10,.8);
+    border:1px solid var(--border-purple);
+    border-radius:8px;
+    margin-bottom:12px;
+}
+
+.metric-title{
+    font-family:'Share Tech Mono',monospace;
+    font-size:.7rem;
+    color:var(--text-soft);
+    letter-spacing:1.5px;
+}
+
+.metric-value{
+    margin-top:6px;
+    font-family:'Orbitron',sans-serif;
+    font-size:1.4rem;
+    text-shadow:0 0 8px var(--neon-violet);
+}
+
+/* SEARCH */
+
+.search-box{
+    margin-bottom:15px;
+}
+
+.search-box input{
+    width:100%;
+    padding:13px 16px;
+    background:rgba(6,1,10,.9);
+    border:1px solid var(--border-purple);
+    border-radius:6px;
+    color:#fff;
+    outline:none;
+    font-family:'Share Tech Mono',monospace;
+}
+
+.filters-group{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    margin-bottom:25px;
+}
+
+.filter-btn{
+    background:rgba(18,4,33,.8);
+    border:1px solid var(--border-purple);
+    color:var(--text-soft);
+    padding:7px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    white-space:nowrap;
+    font-family:'Share Tech Mono',monospace;
+}
+
+.filter-btn.active{
+    background:var(--purple-core);
+    border-color:var(--bright-magenta);
+    color:#fff;
+}
+
+/* CARDS */
+
+.bot-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:18px;
+}
+
+.bot-card,
+.template-card,
+.panel{
+    background:var(--dark-card);
+    border:1px solid var(--border-purple);
+    padding:20px;
+    border-radius:7px;
+}
+
+.bot-card.active{
+    border-color:var(--neon-violet);
+    box-shadow:0 0 15px rgba(207,38,255,.15);
+}
+
+.bot-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.bot-name,
+.template-title{
+    font-family:'Orbitron',sans-serif;
+}
+
+.status-pill{
+    font-family:'Share Tech Mono',monospace;
+    font-size:.65rem;
+    padding:4px 8px;
+    border-radius:12px;
+}
+
+.status-pill.active{
+    color:var(--success-green);
+    border:1px solid var(--success-green);
+    background:rgba(0,255,136,.1);
+}
+
+.status-pill.stopped{
+    color:var(--danger-red);
+    border:1px solid var(--danger-red);
+    background:rgba(255,0,85,.1);
+}
+
+.bot-details{
+    color:var(--text-soft);
+    font-family:'Share Tech Mono',monospace;
+    font-size:.75rem;
+    line-height:1.7;
+    margin-bottom:15px;
+}
+
+.bot-actions{
+    display:flex;
+    gap:8px;
+}
+
+.btn-action,
+.btn-primary{
+    flex:1;
+    padding:10px;
+    background:transparent;
+    border:1px solid var(--neon-violet);
+    color:#fff;
+    cursor:pointer;
+    font-family:'Orbitron',sans-serif;
+    font-size:.7rem;
+}
+
+.btn-action:hover,
+.btn-primary:hover{
+    background:var(--neon-violet);
+    color:#000;
+}
+
+/* TEMPLATES */
+
+.template-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+}
+
+.template-desc{
+    color:var(--text-soft);
+    margin:10px 0 15px;
+    line-height:1.5;
+}
+
+.template-cost{
+    color:var(--bright-magenta);
+    font-family:'Share Tech Mono',monospace;
+    margin-bottom:15px;
+}
+
+/* FORMS */
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    color:var(--text-soft);
+    font-family:'Share Tech Mono',monospace;
+    font-size:.75rem;
+    margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:13px;
+    background:rgba(6,1,10,.9);
+    border:1px solid var(--border-purple);
+    color:#fff;
+    border-radius:4px;
+    outline:none;
+}
+
+.form-group input:focus{
+    border-color:var(--bright-magenta);
+    box-shadow:0 0 10px var(--bright-magenta);
+}
+
+.btn-primary{
+    width:100%;
+    padding:13px;
+    font-size:.8rem;
+}
+
+/* WALLET */
+
+.balance-box{
+    text-align:center;
+    padding:30px;
+    margin-bottom:20px;
+    background:rgba(6,1,10,.7);
+    border:1px solid var(--neon-violet);
+}
+
+.balance-label{
+    color:var(--text-soft);
+    font-family:'Share Tech Mono',monospace;
+}
+
+.balance-value{
+    margin-top:8px;
+    font-family:'Orbitron',sans-serif;
+    font-size:2rem;
+    color:var(--bright-magenta);
+    text-shadow:0 0 15px var(--neon-violet);
+}
+
+.stk-status{
+    display:none;
+    margin-top:15px;
+    padding:12px;
+    border:1px solid var(--border-purple);
+    font-family:'Share Tech Mono',monospace;
+    font-size:.8rem;
+    line-height:1.5;
+}
+
+.stk-status.success{
+    display:block;
+    color:var(--success-green);
+    border-color:var(--success-green);
+}
+
+.stk-status.error{
+    display:block;
+    color:var(--danger-red);
+    border-color:var(--danger-red);
+}
+
+/* TABLE */
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,
+td{
+    padding:12px 8px;
+    border-bottom:1px solid var(--border-purple);
+    text-align:left;
+    font-family:'Share Tech Mono',monospace;
+    font-size:.75rem;
+}
+
+th{
+    color:var(--bright-magenta);
+}
+
+/* NOTIFICATION */
+
+.notification{
+    position:fixed;
+    top:80px;
+    right:20px;
+    max-width:330px;
+    padding:15px 18px;
+    background:#10051b;
+    border:1px solid var(--neon-violet);
+    box-shadow:0 0 20px var(--danger-glow);
+    z-index:1000;
+    display:none;
+}
+
+.notification.show{
+    display:block;
+    animation:fadeIn .3s;
+}
+
+/* FAB */
+
+.fab-container{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    z-index:150;
+}
+
+.fab-trigger{
+    width:58px;
+    height:58px;
+    border:0;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--purple-core),var(--bright-magenta));
+    color:#fff;
+    font-size:1.5rem;
+    cursor:pointer;
+    box-shadow:0 0 25px var(--bright-magenta);
+}
+
+.fab-options{
+    position:absolute;
+    right:0;
+    bottom:70px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(15px);
+    transition:.3s;
+}
+
+.fab-container.active .fab-options{
+    opacity:1;
+    pointer-events:auto;
+    transform:none;
+}
+
+.fab-option-btn{
+    background:var(--dark-card);
+    border:1px solid var(--bright-magenta);
+    color:#fff;
+    padding:10px 16px;
+    border-radius:30px;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .header{
+        padding:14px;
+    }
+
+    .title-group h1{
+        font-size:1rem;
+    }
+
+    .title-group p{
+        font-size:.6rem;
+    }
+
+    .credit-badge{
+        padding:6px 9px;
+        font-size:.6rem;
+    }
+
+    .main-container{
+        padding:18px 14px;
+    }
+
+    .metrics-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .metric-value{
+        font-size:1.1rem;
+    }
+
+    .fab-container{
+        right:15px;
+        bottom:15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<!-- HEADER -->
+<header class="header">
+
+<div class="header-left">
+
+<button class="menu-btn" id="open-sidebar">
+☰
+</button>
+
+<div class="title-group">
+<h1 id="view-title">Dashboard</h1>
+<p id="view-sub">Manage your active deployments</p>
+</div>
+
+</div>
+
+<div class="credit-badge" onclick="switchView('wallet','Wallet & Credits','M-Pesa top-ups and billing')">
+💳 <span id="user-credits-val">0</span> CR
+</div>
+
+</header>
+
+
+<!-- SIDEBAR -->
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+
+<div>
+
+<div class="sidebar-header">
+
+<div class="sidebar-logo">
+<span>●</span> SCORPIO MORDE
+</div>
+
+<button id="close-sidebar"
+style="background:none;border:0;color:#fff;font-size:1.2rem;cursor:pointer">
+✕
+</button>
+
+</div>
+
+<ul class="nav-list">
+
+<li class="nav-item active">
+<button onclick="switchView('dashboard','Dashboard','Manage your active deployments')">
+📊 Dashboard
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('templates','Template Library','Deploy automated node bots')">
+🤖 Templates
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('wallet','Wallet & Credits','M-Pesa top-ups and billing')">
+💳 Wallet
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('transactions','Transactions','Wallet activity')">
+📜 Transactions
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('pricing','Credit Pricing','Available credit bundles')">
+🏷️ Pricing
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('profile','Profile','Account information')">
+👤 Profile
+</button>
+</li>
+
+<li class="nav-item">
+<button onclick="switchView('settings','Settings','Node configuration')">
+⚙️ Settings
+</button>
+</li>
+
+</ul>
+
+</div>
+
+<button class="signout-btn" onclick="signOut()">
+SIGN OUT NODE
+</button>
+
+</aside>
+
+
+<main class="main-container">
+
+
+<!-- DASHBOARD -->
+
+<section id="view-dashboard" class="view-section active">
+
+<div class="metrics-grid">
+
+<div class="metric-card">
+<div class="metric-icon">🤖</div>
+<div class="metric-title">TOTAL BOTS</div>
+<div class="metric-value" id="metric-total">0</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-icon">⚡</div>
+<div class="metric-title">ACTIVE BOTS</div>
+<div class="metric-value" id="metric-active">0</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-icon">🛑</div>
+<div class="metric-title">STOPPED BOTS</div>
+<div class="metric-value" id="metric-stopped">0</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-icon">💳</div>
+<div class="metric-title">DAILY COST</div>
+<div class="metric-value" id="metric-cost">0 CR</div>
+</div>
+
+</div>
+
+
+<div class="search-box">
+
+<input
+id="bot-search"
+type="text"
+placeholder="Search deployments..."
+oninput="filterBots()">
+
+</div>
+
+
+<div class="filters-group">
+
+<button class="filter-btn active"
+id="filter-all"
+onclick="setFilter('all')">
+ALL (<span id="cnt-all">0</span>)
+</button>
+
+<button class="filter-btn"
+id="filter-active"
+onclick="setFilter('active')">
+ACTIVE (<span id="cnt-active">0</span>)
+</button>
+
+<button class="filter-btn"
+id="filter-stopped"
+onclick="setFilter('stopped')">
+STOPPED (<span id="cnt-stopped">0</span>)
+</button>
+
+</div>
+
+
+<div id="bot-container"></div>
+
+</section>
+
+
+<!-- TEMPLATES -->
+
+<section id="view-templates" class="view-section">
+
+<div class="template-grid">
+
+<div class="template-card">
+
+<div class="template-title">
+WhatsApp AI Assistant
+</div>
+
+<div class="template-desc">
+Automated WhatsApp assistant for customer support and bot automation.
+</div>
+
+<div class="template-cost">
+8 CREDITS / DAY
+</div>
+
+<button class="btn-primary"
+onclick="deployBotFromTemplate('WhatsApp AI Assistant',8)">
+DEPLOY BOT
+</button>
+
+</div>
+
+
+<div class="template-card">
+
+<div class="template-title">
+Telegram Bot
+</div>
+
+<div class="template-desc">
+Deploy a Telegram automation node for channels and groups.
+</div>
+
+<div class="template-cost">
+5 CREDITS / DAY
+</div>
+
+<button class="btn-primary"
+onclick="deployBotFromTemplate('Telegram Bot',5)">
+DEPLOY BOT
+</button>
+
+</div>
+
+
+<div class="template-card">
+
+<div class="template-title">
+Discord Bot
+</div>
+
+<div class="template-desc">
+Discord automation node with moderation and command support.
+</div>
+
+<div class="template-cost">
+5 CREDITS / DAY
+</div>
+
+<button class="btn-primary"
+onclick="deployBotFromTemplate('Discord Bot',5)">
+DEPLOY BOT
+</button>
+
+</div>
+
+
+<div class="template-card">
+
+<div class="template-title">
+AI Customer Support
+</div>
+
+<div class="template-desc">
+Automated AI-powered customer support deployment.
+</div>
+
+<div class="template-cost">
+10 CREDITS / DAY
+</div>
+
+<button class="btn-primary"
+onclick="deployBotFromTemplate('AI Customer Support',10)">
+DEPLOY BOT
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- WALLET -->
+
+<section id="view-wallet" class="view-section">
+
+<div class="panel">
+
+<div class="balance-box">
+
+<div class="balance-label">
+AVAILABLE CREDITS
+</div>
+
+<div class="balance-value">
+<span id="wallet-balance">0</span>
+</div>
+
+</div>
+
+
+<h2 style="font-family:Orbitron;margin-bottom:20px">
+M-PESA TOP-UP
+</h2>
+
+
+<form id="stk-form">
+
+<div class="form-group">
+
+<label>
+PHONE NUMBER
+</label>
+
+<input
+id="mpesa-phone"
+type="tel"
+placeholder="0712345678"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+AMOUNT KES
+</label>
+
+<input
+id="mpesa-amount"
+type="number"
+min="1"
+placeholder="100"
+required>
+
+</div>
+
+
+<button class="btn-primary" type="submit">
+⚡ REQUEST M-PESA STK
+</button>
+
+</form>
+
+
+<div id="stk-status" class="stk-status"></div>
+
+</div>
+
+</section>
+
+
+<!-- TRANSACTIONS -->
+
+<section id="view-transactions" class="view-section">
+
+<div class="panel">
+
+<h2 style="font-family:Orbitron;margin-bottom:20px">
+TRANSACTION HISTORY
+</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>DATE</th>
+<th>TYPE</th>
+<th>AMOUNT</th>
+<th>STATUS</th>
+</tr>
+
+</thead>
+
+<tbody id="transactions-body">
+
+<tr>
+<td colspan="4">
+Loading...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PRICING -->
+
+<section id="view-pricing" class="view-section">
+
+<div class="template-grid">
+
+<div class="template-card">
+
+<div class="template-title">
+STARTER
+</div>
+
+<div class="template-desc">
+Small credit package for testing your first deployment.
+</div>
+
+<div class="template-cost">
+100 CREDITS
+</div>
+
+<button class="btn-primary"
+onclick="startTopup(100)">
+BUY CREDITS
+</button>
+
+</div>
+
+
+<div class="template-card">
+
+<div class="template-title">
+PRO NODE
+</div>
+
+<div class="template-desc">
+For users running multiple automated deployments.
+</div>
+
+<div class="template-cost">
+500 CREDITS
+</div>
+
+<button class="btn-primary"
+onclick="startTopup(500)">
+BUY CREDITS
+</button>
+
+</div>
+
+
+<div class="template-card">
+
+<div class="template-title">
+POWER NODE
+</div>
+
+<div class="template-desc">
+Large credit package for multiple deployments.
+</div>
+
+<div class="template-cost">
+1000 CREDITS
+</div>
+
+<button class="btn-primary"
+onclick="startTopup(1000)">
+BUY CREDITS
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section id="view-profile" class="view-section">
+
+<div class="panel">
+
+<h2 style="font-family:Orbitron;margin-bottom:20px">
+NODE PROFILE
+</h2>
+
+<div class="form-group">
+
+<label>NAME</label>
+
+<input id="profile-name" readonly>
+
+</div>
+
+<div class="form-group">
+
+<label>EMAIL</label>
+
+<input id="profile-email" readonly>
+
+</div>
+
+<div class="form-group">
+
+<label>ACCOUNT ID</label>
+
+<input id="profile-id" readonly>
+
+</div>
+
+<div class="form-group">
+
+<label>ACCOUNT STATUS</label>
+
+<input value="AUTHORIZED NODE" readonly>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section id="view-settings" class="view-section">
+
+<div class="panel">
+
+<h2 style="font-family:Orbitron;margin-bottom:20px">
+NODE SETTINGS
+</h2>
+
+<div class="form-group">
+
+<label>API STATUS</label>
+
+<input id="api-status" value="CHECKING..." readonly>
+
+</div>
+
+<div class="form-group">
+
+<label>SERVER</label>
+
+<input value="SCORPIO MORDE CLOUD" readonly>
+
+</div>
+
+<div class="form-group">
+
+<label>API VERSION</label>
+
+<input value="v1" readonly>
+
+</div>
+
+<button class="btn-primary"
+onclick="checkServer()">
+CHECK SERVER
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+
+<!-- FAB -->
+
+<div class="fab-container" id="fab">
+
+<div class="fab-options">
+
+<button class="fab-option-btn"
+onclick="switchView('templates','Template Library','Deploy automated node bots')">
+🤖 Deploy Bot
+</button>
+
+<button class="fab-option-btn"
+onclick="switchView('wallet','Wallet & Credits','M-Pesa top-ups and billing')">
+💳 Add Credits
+</button>
+
+</div>
+
+<button class="fab-trigger"
+onclick="toggleFab()">
++
+</button>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SCORPIO MORDE API
+===================================================== */
+
+const API = {
+    auth: "/api/auth/me",
+    bots: "/api/bots",
+    wallet: "/api/wallet",
+    transactions: "/api/wallet/transactions",
+    stk: "/api/payment/stk"
+};
+
+
+/* =====================================================
+   AUTH TOKEN
+===================================================== */
+
+function getToken(){
+
+    return localStorage.getItem("token") ||
+           localStorage.getItem("authToken") ||
+           localStorage.getItem("jwt");
+
+}
+
+
+function authHeaders(){
+
+    const token = getToken();
+
+    return {
+        "Content-Type":"application/json",
+        ...(token ? {
+            "Authorization":"Bearer " + token
+        } : {})
+    };
+
+}
+
+
+/* =====================================================
+   API REQUEST
+===================================================== */
+
+async function apiRequest(url, options={}){
+
+    const response = await fetch(url,{
+        ...options,
+        headers:{
+            ...authHeaders(),
+            ...(options.headers || {})
+        }
+    });
+
+    let data={};
+
+    try{
+        data=await response.json();
+    }catch{
+        data={};
+    }
+
+    if(!response.ok){
+
+        throw new Error(
+            data.message ||
+            data.error ||
+            `API ERROR ${response.status}`
+        );
+
+    }
+
+    return data;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION
+===================================================== */
+
+function notify(message,type="info"){
+
+    const box=document.getElementById("notification");
+
+    box.textContent=message;
+    box.style.borderColor=
+        type==="error"
+        ? "var(--danger-red)"
+        : type==="success"
+        ? "var(--success-green)"
+        : "var(--neon-violet)";
+
+    box.classList.add("show");
+
+    setTimeout(()=>{
+        box.classList.remove("show");
+    },3500);
+
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("sidebar-overlay");
+
+document.getElementById("open-sidebar")
+.addEventListener("click",()=>{
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+});
+
+document.getElementById("close-sidebar")
+.addEventListener("click",closeSidebar);
+
+overlay.addEventListener("click",closeSidebar);
+
+function closeSidebar(){
+
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+
+}
+
+
+/* =====================================================
+   VIEW SWITCH
+===================================================== */
+
+function switchView(view,title,subtitle){
+
+    document.querySelectorAll(".view-section")
+    .forEach(section=>{
+        section.classList.remove("active");
+    });
+
+    const target=document.getElementById("view-"+view);
+
+    if(target){
+        target.classList.add("active");
+    }
+
+    document.getElementById("view-title").textContent=title;
+    document.getElementById("view-sub").textContent=subtitle;
+
+    document.querySelectorAll(".nav-item")
+    .forEach(item=>{
+        item.classList.remove("active");
+
+        const button=item.querySelector("button");
+
+        if(button && button.getAttribute("onclick")?.includes(
+            `switchView('${view}'`
+        )){
+            item.classList.add("active");
+        }
+    });
+
+    closeSidebar();
+
+    if(view==="wallet"){
+        loadWallet();
+    }
+
+    if(view==="transactions"){
+        loadTransactions();
+    }
+
+    if(view==="profile"){
+        loadProfile();
+    }
+
+}
+
+
+/* =====================================================
+   BOTS
+===================================================== */
+
+let bots=[];
+let currentFilter="all";
+
+
+async function loadBots(){
+
+    try{
+
+        const data=await apiRequest(API.bots);
+
+        bots=data.bots || data.data || data || [];
+
+        if(!Array.isArray(bots)){
+            bots=[];
+        }
+
+        renderBots();
+
+    }catch(error){
+
+        console.error(error);
+
+        bots=[];
+
+        renderBots();
+
+        notify(
+            "Unable to load deployments: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+function renderBots(){
+
+    const container=document.getElementById("bot-container");
+
+    let filtered=bots.filter(bot=>{
+
+        const status=
+            String(bot.status || "stopped").toLowerCase();
+
+        if(currentFilter==="active"){
+            return status==="active" || status==="running";
+        }
+
+        if(currentFilter==="stopped"){
+            return status!=="active" && status!=="running";
+        }
+
+        return true;
+
+    });
+
+
+    const search=
+        document.getElementById("bot-search")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    if(search){
+
+        filtered=filtered.filter(bot=>
+            String(bot.name || "")
+            .toLowerCase()
+            .includes(search)
+        );
+
+    }
+
+
+    document.getElementById("metric-total").textContent=bots.length;
+
+    const active=bots.filter(bot=>{
+        const s=String(bot.status||"").toLowerCase();
+        return s==="active" || s==="running";
+    }).length;
+
+    const stopped=bots.length-active;
+
+    document.getElementById("metric-active").textContent=active;
+    document.getElementById("metric-stopped").textContent=stopped;
+
+    document.getElementById("cnt-all").textContent=bots.length;
+    document.getElementById("cnt-active").textContent=active;
+    document.getElementById("cnt-stopped").textContent=stopped;
+
+
+    const cost=bots.reduce((sum,bot)=>
+        sum+Number(bot.dailyCost || bot.cost || 0),0
+    );
+
+    document.getElementById("metric-cost").textContent=
+        cost+" CR";
+
+
+    if(!filtered.length){
+
+        container.innerHTML=`
+
+        <div class="panel" style="text-align:center">
+
+            <div style="font-size:2rem;margin-bottom:10px">
+                🤖
+            </div>
+
+            <h2 style="font-family:Orbitron;margin-bottom:10px">
+                NO DEPLOYMENTS
+            </h2>
+
+            <p style="color:var(--text-soft);margin-bottom:20px">
+                Your node currently has no matching bot deployments.
+            </p>
+
+            <button class="btn-primary"
+                onclick="switchView(
+                    'templates',
+                    'Template Library',
+                    'Deploy automated node bots'
+                )">
+                DEPLOY FIRST BOT
+            </button>
+
+        </div>`;
+
+        return;
+    }
+
+
+    container.innerHTML=`
+
+    <div class="bot-grid">
+
+    ${filtered.map(bot=>{
+
+        const status=
+            String(bot.status || "stopped").toLowerCase();
+
+        const active=
+            status==="active" || status==="running";
+
+        return `
+
+        <div class="bot-card ${active ? "active":""}">
+
+            <div class="bot-header">
+
+                <div class="bot-name">
+                    ${escapeHtml(bot.name || "Unnamed Bot")}
+                </div>
+
+                <div class="status-pill ${active ? "active":"stopped"}">
+                    ${active ? "ACTIVE":"STOPPED"}
+                </div>
+
+            </div>
+
+            <div class="bot-details">
+
+                ID: ${escapeHtml(String(bot._id || bot.id || "N/A"))}<br>
+
+                PLATFORM:
+                ${escapeHtml(bot.platform || "CUSTOM")}<br>
+
+                COST:
+                ${Number(bot.dailyCost || bot.cost || 0)}
+                CR / DAY
+
+            </div>
+
+            <div class="bot-actions">
+
+                ${
+                    active
+
+                    ? `<button
+                        class="btn-action danger"
+                        onclick="stopBot('${bot._id || bot.id}')">
+                        STOP
+                       </button>`
+
+                    : `<button
+                        class="btn-action"
+                        onclick="startBot('${bot._id || bot.id}')">
+                        START
+                       </button>`
+                }
+
+                <button
+                    class="btn-action"
+                    onclick="deleteBot('${bot._id || bot.id}')">
+                    DELETE
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+    }).join("")}
+
+    </div>`;
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+function setFilter(filter){
+
+    currentFilter=filter;
+
+    document.querySelectorAll(".filter-btn")
+    .forEach(btn=>btn.classList.remove("active"));
+
+    document.getElementById("filter-"+filter)
+    .classList.add("active");
+
+    renderBots();
+
+}
+
+
+function filterBots(){
+    renderBots();
+}
+
+
+/* =====================================================
+   START BOT
+===================================================== */
+
+async function startBot(id){
+
+    try{
+
+        await apiRequest(
+            `${API.bots}/${encodeURIComponent(id)}/start`,
+            {
+                method:"POST"
+            }
+        );
+
+        notify("Bot started successfully","success");
+
+        await loadBots();
+
+    }catch(error){
+
+        notify(
+            "Unable to start bot: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   STOP BOT
+===================================================== */
+
+async function stopBot(id){
+
+    try{
+
+        await apiRequest(
+            `${API.bots}/${encodeURIComponent(id)}/stop`,
+            {
+                method:"POST"
+            }
+        );
+
+        notify("Bot stopped","success");
+
+        await loadBots();
+
+    }catch(error){
+
+        notify(
+            "Unable to stop bot: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DELETE BOT
+===================================================== */
+
+async function deleteBot(id){
+
+    if(!confirm("Delete this deployment?")){
+        return;
+    }
+
+    try{
+
+        await apiRequest(
+            `${API.bots}/${encodeURIComponent(id)}`,
+            {
+                method:"DELETE"
+            }
+        );
+
+        notify("Deployment deleted","success");
+
+        await loadBots();
+
+    }catch(error){
+
+        notify(
+            "Unable to delete bot: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DEPLOY TEMPLATE
+===================================================== */
+
+async function deployBotFromTemplate(name,cost){
+
+    try{
+
+        const data=await apiRequest(
+            API.bots,
+            {
+                method:"POST",
+                body:JSON.stringify({
+                    name:name,
+                    dailyCost:cost
+                })
+            }
+        );
+
+        notify(
+            data.message || "Bot deployment created",
+            "success"
+        );
+
+        switchView(
+            "dashboard",
+            "Dashboard",
+            "Manage your active deployments"
+        );
+
+        await loadBots();
+
+    }catch(error){
+
+        notify(
+            "Deployment failed: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   WALLET
+===================================================== */
+
+async function loadWallet(){
+
+    try{
+
+        const data=await apiRequest(API.wallet);
+
+        const wallet=
+            data.wallet ||
+            data.data ||
+            data;
+
+        const balance=
+            Number(
+                wallet.balance ??
+                wallet.credits ??
+                wallet.creditBalance ??
+                0
+            );
+
+        document.getElementById("wallet-balance")
+        .textContent=balance.toFixed(2);
+
+        document.getElementById("user-credits-val")
+        .textContent=balance.toFixed(2);
+
+    }catch(error){
+
+        console.error(error);
+
+        notify(
+            "Unable to load wallet: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   M-PESA STK
+===================================================== */
+
+document.getElementById("stk-form")
+.addEventListener("submit",async function(event){
+
+    event.preventDefault();
+
+    const phone=
+        document.getElementById("mpesa-phone")
+        .value
+        .trim();
+
+    const amount=
+        Number(
+            document.getElementById("mpesa-amount")
+            .value
+        );
+
+    const status=
+        document.getElementById("stk-status");
+
+
+    if(!phone || amount<=0){
+
+        status.className="stk-status error";
+        status.textContent=
+            "Enter a valid phone number and amount.";
+
+        return;
+
+    }
+
+
+    status.className="stk-status";
+    status.style.display="block";
+    status.textContent=
+        "DISPATCHING M-PESA STK REQUEST...";
+
+
+    try{
+
+        const data=await apiRequest(
+            API.stk,
+            {
+                method:"POST",
+                body:JSON.stringify({
+                    phone:phone,
+                    amount:amount
+                })
+            }
+        );
+
+
+        status.className="stk-status success";
+
+        status.textContent=
+            data.message ||
+            "STK push sent. Check your phone and complete the payment.";
+
+        notify(
+            "M-Pesa STK request sent",
+            "success"
+        );
+
+    }catch(error){
+
+        status.className="stk-status error";
+
+        status.textContent=
+            "STK ERROR: "+error.message;
+
+        notify(
+            "M-Pesa request failed",
+            "error"
+        );
+
+    }
+
+});
+
+
+/* =====================================================
+   TRANSACTIONS
+===================================================== */
+
+async function loadTransactions(){
+
+    const body=
+        document.getElementById("transactions-body");
+
+    body.innerHTML=`
+        <tr>
+            <td colspan="4">Loading...</td>
+        </tr>
+    `;
+
+
+    try{
+
+        const data=
+            await apiRequest(API.transactions);
+
+        const transactions=
+            data.transactions ||
+            data.data ||
+            data ||
+            [];
+
+
+        if(!Array.isArray(transactions) ||
+           !transactions.length){
+
+            body.innerHTML=`
+                <tr>
+                    <td colspan="4">
+                        No transactions yet.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML=
+            transactions.map(tx=>`
+
+            <tr>
+
+                <td>
+                    ${escapeHtml(
+                        new Date(
+                            tx.createdAt || Date.now()
+                        ).toLocaleDateString()
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        tx.type || "PAYMENT"
+                    )}
+                </td>
+
+                <td>
+                    ${Number(
+                        tx.amount || 0
+                    ).toFixed(2)}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        tx.status || "PENDING"
+                    )}
+                </td>
+
+            </tr>
+
+            `).join("");
+
+
+    }catch(error){
+
+        body.innerHTML=`
+            <tr>
+                <td colspan="4">
+                    Unable to load transactions.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+async function loadProfile(){
+
+    try{
+
+        const data=
+            await apiRequest(API.auth);
+
+        const user=
+            data.user ||
+            data.data ||
+            data;
+
+
+        document.getElementById("profile-name")
+        .value=user.name || user.username || "NODE USER";
+
+        document.getElementById("profile-email")
+        .value=user.email || "N/A";
+
+        document.getElementById("profile-id")
+        .value=user._id || user.id || "N/A";
+
+
+    }catch(error){
+
+        notify(
+            "Unable to load profile: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SERVER STATUS
+===================================================== */
+
+async function checkServer(){
+
+    const status=
+        document.getElementById("api-status");
+
+    status.value="CHECKING...";
+
+
+    try{
+
+        const response=
+            await fetch("/");
+
+        if(response.ok){
+
+            status.value="ONLINE";
+
+            notify(
+                "SCORPIO MORDE API is online",
+                "success"
+            );
+
+        }else{
+
+            status.value="HTTP "+response.status;
+
+        }
+
+    }catch(error){
+
+        status.value="OFFLINE";
+
+        notify(
+            "Server connection failed",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PRICING
+===================================================== */
+
+function startTopup(amount){
+
+    switchView(
+        "wallet",
+        "Wallet & Credits",
+        "M-Pesa top-ups and billing"
+    );
+
+    document.getElementById("mpesa-amount")
+    .value=amount;
+
+}
+
+
+/* =====================================================
+   FAB
+===================================================== */
+
+function toggleFab(){
+
+    document.getElementById("fab")
+    .classList.toggle("active");
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function signOut(){
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("jwt");
+
+    window.location.href="login.html";
+
+}
+
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+async function initializeDashboard(){
+
+    if(!getToken()){
+
+        notify(
+            "Authentication required. Redirecting...",
+            "error"
+        );
+
+        setTimeout(()=>{
+            window.location.href="login.html";
+        },1000);
+
+        return;
+
+    }
+
+
+    await Promise.all([
+        loadBots(),
+        loadWallet(),
+        loadProfile()
+    ]);
+
+    checkServer();
+
+}
+
+
+initializeDashboard();
+
+</script>
+
+</body>
+</html>
