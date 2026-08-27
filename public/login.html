@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCORPIO MORDE | Node Authorization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #06010a;
+            --purple-core: #7b1fa2;
+            --neon-violet: #cf26ff;
+            --bright-magenta: #f038ff;
+            --dark-card: rgba(18, 4, 33, 0.85);
+            --danger-glow: rgba(207, 38, 255, 0.4);
+            --danger-red: #ff0055;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(123, 31, 162, 0.25) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(207, 38, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(15, 2, 28, 0.9) 0%, transparent 50%);
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            padding: 35px 30px;
+            background: var(--dark-card);
+            border: 1px solid var(--neon-violet);
+            box-shadow: 
+                0 0 35px var(--danger-glow),
+                inset 0 0 15px rgba(207, 38, 255, 0.2);
+            border-radius: 4px;
+            position: relative;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            clip-path: polygon(0 0, 93% 0, 100% 7%, 100% 100%, 7% 100%, 0 93%);
+        }
+
+        .container::before {
+            content: "AUTH_GATEWAY: RESTRICTED";
+            position: absolute;
+            top: 6px;
+            right: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            color: var(--bright-magenta);
+            letter-spacing: 2px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px var(--neon-violet);
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 0.8rem;
+            color: var(--neon-violet);
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: #a78bfa;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(6, 1, 10, 0.9);
+            border: 1px solid rgba(207, 38, 255, 0.4);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--bright-magenta);
+            box-shadow: 0 0 12px var(--bright-magenta);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--neon-violet);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: var(--neon-violet);
+            color: #000;
+            box-shadow: 0 0 25px var(--neon-violet);
+        }
+
+        .links-wrapper {
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .links-wrapper a {
+            color: var(--bright-magenta);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: text-shadow 0.3s ease;
+        }
+
+        .links-wrapper a:hover {
+            text-shadow: 0 0 8px var(--bright-magenta);
+        }
+
+        /* --- DANGEROUS PROCESSING OVERLAY --- */
+        .processing-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(6, 1, 10, 0.96);
+            z-index: 50;
+            padding: 30px 20px;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hash-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--danger-red);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--danger-red);
+            margin-bottom: 15px;
+            animation: pulse-red 1s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; text-shadow: 0 0 20px var(--danger-red); }
+        }
+
+        .hash-stream {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: #a78bfa;
+            background: #000;
+            border: 1px solid var(--purple-core);
+            padding: 12px;
+            height: 110px;
+            overflow: hidden;
+            text-align: left;
+            margin-bottom: 20px;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--neon-violet);
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger-red), var(--bright-magenta));
+            box-shadow: 0 0 15px var(--bright-magenta);
+            transition: width 0.1s linear;
+        }
+
+        .status-msg {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- LOGIN FORM -->
+        <div class="header">
+            <h1>SCORPIO MORDE</h1>
+            <p>[ AUTH_IDENTITY_CHALLENGE ]</p>
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">> EMAIL_IDENTITY [ADDR_V4]</label>
+                <input type="email" id="email" required placeholder="node@scorpiomorde.io">
+            </div>
+
+            <div class="form-group">
+                <label for="password">> ACCESS_KEY [ENTROPY_256]</label>
+                <input type="password" id="password" required placeholder="••••••••••••">
+            </div>
+
+            <button type="submit" class="btn-login">LOGIN</button>
+        </form>
+
+        <div class="links-wrapper">
+            <div><a href="forgot-password.html">> FORGOT_PASSWORD?</a></div>
+            <div>NO NODE? <a href="register.html">CREATE_ACC</a></div>
+        </div>
+
+        <!-- DANGEROUS HASH PROCESSING OVERLAY -->
+        <div class="processing-overlay" id="processing-screen">
+            <div class="hash-title">⚠ DECRYPTING AUTH TOKEN ⚠</div>
+            <div class="hash-stream" id="hash-log">
+                [VERIFYING CREDENTIAL HASH...]
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+            <div class="status-msg" id="status-text">DECRYPTING RSA PRIVKEY...</div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const overlay = document.getElementById('processing-screen');
+        const progressBar = document.getElementById('progress');
+        const hashLog = document.getElementById('hash-log');
+        const statusText = document.getElementById('status-text');
+
+        // Helper to generate hex strings for hash output
+        function generateRandomHash(length) {
+            const chars = '0123456789ABCDEF89abcdef';
+            let result = '0x';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Trigger dangerous auth sequence
+            overlay.style.display = 'flex';
+
+            const duration = 5000; // 5-second verification
+            const intervalTime = 60;
+            let elapsed = 0;
+
+            const authInterval = setInterval(() => {
+                elapsed += intervalTime;
+                const percentage = Math.min((elapsed / duration) * 100, 100);
+                progressBar.style.width = percentage + '%';
+
+                // Stream real-time hash language
+                const newHash = generateRandomHash(32);
+                hashLog.innerHTML += `<br>> TOKEN: ${newHash}`;
+                hashLog.scrollTop = hashLog.scrollHeight;
+
+                if (percentage > 25 && percentage < 55) {
+                    statusText.textContent = "VERIFYING HANDSHAKE SIGNATURE...";
+                } else if (percentage >= 55 && percentage < 85) {
+                    statusText.textContent = "ESTABLISHING ENCRYPTED SESSION...";
+                } else if (percentage >= 85) {
+                    statusText.textContent = "SESSION VALIDATED. REDIRECTING...";
+                }
+
+                if (elapsed >= duration) {
+                    clearInterval(authInterval);
+                    window.location.href = 'dashboard.html';
+                }
+            }, intervalTime);
+        });
+    </script>
+</body>
+</html>
