@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCORPIO MORDE | Establishing Secure Node</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #06010a;
+            --purple-core: #7b1fa2;
+            --neon-violet: #cf26ff;
+            --bright-magenta: #f038ff;
+            --dark-card: rgba(18, 4, 33, 0.85);
+            --danger-glow: rgba(207, 38, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(123, 31, 162, 0.25) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(207, 38, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(15, 2, 28, 0.9) 0%, transparent 50%);
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient scanline effect */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 40px 30px;
+            background: var(--dark-card);
+            border: 1px solid var(--neon-violet);
+            box-shadow: 
+                0 0 30px var(--danger-glow),
+                inset 0 0 15px rgba(207, 38, 255, 0.2);
+            border-radius: 4px;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            clip-path: polygon(0 0, 93% 0, 100% 7%, 100% 100%, 7% 100%, 0 93%);
+        }
+
+        /* Top Corner Accent */
+        .container::before {
+            content: "SYSTEM HOSTILE";
+            position: absolute;
+            top: 6px;
+            right: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            color: var(--bright-magenta);
+            letter-spacing: 2px;
+        }
+
+        .scorpion-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px auto;
+            position: relative;
+            filter: drop-shadow(0 0 12px var(--bright-magenta));
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 8px var(--neon-violet)); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 20px var(--bright-magenta)); }
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #fff;
+            text-shadow: 
+                0 0 10px var(--neon-violet),
+                0 0 20px var(--neon-violet);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--neon-violet);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .status-box {
+            background: rgba(6, 1, 10, 0.8);
+            border: 1px solid rgba(207, 38, 255, 0.3);
+            padding: 15px;
+            margin-bottom: 25px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #d8b4fe;
+            text-align: left;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .status-text {
+            color: var(--bright-magenta);
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.4; }
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--purple-core);
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple-core), var(--bright-magenta));
+            box-shadow: 0 0 15px var(--bright-magenta);
+            transition: width 0.1s linear;
+        }
+
+        .timer-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: #a78bfa;
+        }
+
+        .timer-count {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .skip-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid var(--neon-violet);
+            color: #fff;
+            padding: 8px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            background: var(--neon-violet);
+            box-shadow: 0 0 15px var(--neon-violet);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SCORPIO VECTOR LOGO -->
+        <svg class="scorpion-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 5 C55 15, 65 20, 75 15 C80 25, 70 35, 60 30 C65 40, 75 45, 85 45 C80 55, 65 50, 55 45 C60 60, 55 75, 45 85 C40 90, 30 95, 25 85 C20 75, 35 70, 40 65 C30 65, 20 55, 15 45 C25 45, 35 40, 40 30 C30 35, 20 25, 25 15 C35 20, 45 15, 50 5 Z" fill="url(#scorpio-grad)" stroke="#cf26ff" stroke-width="1.5"/>
+            <circle cx="50" cy="20" r="3" fill="#ffffff" />
+            <defs>
+                <linearGradient id="scorpio-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f038ff" />
+                    <stop offset="100%" stop-color="#4a0072" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <h1>SCORPIO MORDE</h1>
+        <div class="subtitle">Lethal Infrastructure</div>
+
+        <div class="status-box">
+            <div>> <span id="status-line">INITIALIZING NEURAL LINK...</span></div>
+            <div class="status-text">> BYPASSING SECURITY GATEWAY...</div>
+        </div>
+
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+
+        <div class="timer-text">
+            REDIRECTING TO GATEWAY IN <span class="timer-count" id="countdown">5</span>s
+        </div>
+
+        <a href="register.html" class="skip-btn">BYPASS TIMER</a>
+    </div>
+
+    <script>
+        const targetUrl = "register.html";
+        const duration = 5000; // 5 seconds
+        const intervalTime = 50; 
+        let elapsed = 0;
+
+        const progressBar = document.getElementById('progress');
+        const countdownEl = document.getElementById('countdown');
+        const statusLine = document.getElementById('status-line');
+
+        const statusMessages = [
+            "INITIALIZING NEURAL LINK...",
+            "ENCRYPTING RSA-8192 TUNNEL...",
+            "ALLOCATING UNTRACEABLE NODES...",
+            "AUTHENTICATING HOST PROTOCOL...",
+            "ACCESS GRANTED. REDIRECTING..."
+        ];
+
+        const timer = setInterval(() => {
+            elapsed += intervalTime;
+            
+            // Calculate progress percentage
+            const percentage = Math.min((elapsed / duration) * 100, 100);
+            progressBar.style.width = percentage + '%';
+
+            // Calculate remaining seconds
+            const secondsLeft = Math.ceil((duration - elapsed) / 1000);
+            countdownEl.textContent = Math.max(0, secondsLeft);
+
+            // Dynamic status line text update based on progress
+            const messageIndex = Math.min(
+                Math.floor((elapsed / duration) * statusMessages.length), 
+                statusMessages.length - 1
+            );
+            statusLine.textContent = statusMessages[messageIndex];
+
+            // Redirect on completion
+            if (elapsed >= duration) {
+                clearInterval(timer);
+                window.location.href = targetUrl;
+            }
+        }, intervalTime);
+    </script>
+</body>
+  </html>
+  
